@@ -34,7 +34,7 @@ keys = pygame.key.get_pressed()
 screen.fill([0,0,0])
 posH = 0
 posZ = 45
-r = 4
+r = 10
 cube = ((1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1))
 faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
          Face(cube[0],cube[1],cube[5],cube[4],1),
@@ -58,9 +58,9 @@ while x == False:
         posH-=1
         if posH<0:
             posH=359
-    if keyboard[pygame.K_DOWN] == 1 and posZ>-90:
+    if keyboard[pygame.K_DOWN] == 1 and posZ>-89:
         posZ-=1
-    if keyboard[pygame.K_UP] == 1 and posZ<90:
+    if keyboard[pygame.K_UP] == 1 and posZ<89:
         posZ+=1
     
     screen.fill([0,0,0])
@@ -100,11 +100,13 @@ while x == False:
             t = - ( (0 - realX)*(realX - corner[0]) + (0 - realY)*(realY - corner[1]) + (0 - realZ)*(realZ - corner[2]) ) / ( (0 - realX)**2 + (0 - realY)**2 + (0 - realZ)**2 )
             vertex = [realX + (0 - realX)*t, realY + (0 - realY)*t, realZ + (0 - realZ)*t]
             perpendicular = [vertex[0] - (0 - realY), vertex[1] + (0 - realX), vertex[2]]
-            angleR.append( math.degrees( math.acos( ( (perpendicular[0] - vertex[0])*(corner[0] - vertex[0]) + (perpendicular[1] - vertex[1])*(corner[1] - vertex[1]) + (perpendicular[2] - vertex[2])*(corner[2] - vertex[2]) ) / ( math.sqrt( math.pow( perpendicular[0] - vertex[0], 2) + math.pow( perpendicular[1] - vertex[1], 2) + math.pow( perpendicular[2] - vertex[2], 2) ) *  math.sqrt( math.pow( corner[0] - vertex[0], 2) + math.pow( corner[1] - vertex[1], 2) + math.pow( corner[2] - vertex[2], 2) ) ) ) ) )
-            
+            R = math.acos( ( (perpendicular[0] - vertex[0])*(corner[0] - vertex[0]) + (perpendicular[1] - vertex[1])*(corner[1] - vertex[1]) + (perpendicular[2] - vertex[2])*(corner[2] - vertex[2]) ) / ( math.sqrt( math.pow( perpendicular[0] - vertex[0], 2) + math.pow( perpendicular[1] - vertex[1], 2) + math.pow( perpendicular[2] - vertex[2], 2) ) *  math.sqrt( math.pow( corner[0] - vertex[0], 2) + math.pow( corner[1] - vertex[1], 2) + math.pow( corner[2] - vertex[2], 2) ) ) )
+            if(corner[2]<perpendicular[2]):
+                angleR.append(2*math.pi - R)
+            else:
+                angleR.append(R)
             
         print(angleD)
-        print(angleR)
         
         pygame.draw.polygon(screen, (0,255,0), ((450+angleD[0]*5*math.cos(angleR[0]), 275-angleD[0]*5*math.sin(angleR[0])), (450+angleD[1]*5*math.cos(angleR[1]), 275-angleD[1]*5*math.sin(angleR[1])), (450+angleD[2]*5*math.cos(angleR[2]), 275-angleD[2]*5*math.sin(angleR[2])), (450+angleD[3]*5*math.cos(angleR[3]), 275-angleD[3]*5*math.sin(angleR[3]))), 0)
         pygame.draw.polygon(screen, (0,0,0), ((450+angleD[0]*5*math.cos(angleR[0]), 275-angleD[0]*5*math.sin(angleR[0])), (450+angleD[1]*5*math.cos(angleR[1]), 275-angleD[1]*5*math.sin(angleR[1])), (450+angleD[2]*5*math.cos(angleR[2]), 275-angleD[2]*5*math.sin(angleR[2])), (450+angleD[3]*5*math.cos(angleR[3]), 275-angleD[3]*5*math.sin(angleR[3]))), 1)
