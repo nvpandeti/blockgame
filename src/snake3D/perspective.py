@@ -83,9 +83,9 @@ while x == False:
     for face in faces:
         
         angleD = []
-        
+        angleR = []
         for corner in face.corners:
-            #"""
+            """
             v1mag = math.sqrt((0-realX)**2 + (0-realY)**2 + (0-realZ)**2)
             v2mag = math.sqrt( (corner[0]-realX)**2 + (corner[1]-realY)**2 + (corner[2]-realZ)**2 )
             
@@ -93,11 +93,24 @@ while x == False:
             v2norm = [(corner[0]-realX) / v2mag, (corner[1]-realY) / v2mag, (corner[2]-realZ) / v2mag]
             
             angleD.append( math.degrees( math.acos( v1norm[0] * v2norm[0] + v1norm[1] * v2norm[1] + v1norm[2] * v2norm[2] ) ) )
-            #"""
+            """
             
             angleD.append( math.degrees( math.acos( ( (0 - realX)*(corner[0] - realX) + (0 - realY)*(corner[1] - realY) + (0 - realZ)*(corner[2] - realZ) ) / ( math.sqrt( math.pow( 0 - realX, 2) + math.pow( 0 - realY, 2) + math.pow( 0 - realZ, 2) ) *  math.sqrt( math.pow( corner[0] - realX, 2) + math.pow( corner[1] - realY, 2) + math.pow( corner[2] - realZ, 2) ) ) ) ) )
-        #print(angleD)
-        #"""
+            
+            t = - ( (0 - realX)*(realX - corner[0]) + (0 - realY)*(realY - corner[1]) + (0 - realZ)*(realZ - corner[2]) ) / ( (0 - realX)**2 + (0 - realY)**2 + (0 - realZ)**2 )
+            vertex = [realX + (0 - realX)*t, realY + (0 - realY)*t, realZ + (0 - realZ)*t]
+            perpendicular = [vertex[0] - (0 - realY), vertex[1] + (0 - realX), vertex[2]]
+            angleR.append( math.degrees( math.acos( ( (perpendicular[0] - vertex[0])*(corner[0] - vertex[0]) + (perpendicular[1] - vertex[1])*(corner[1] - vertex[1]) + (perpendicular[2] - vertex[2])*(corner[2] - vertex[2]) ) / ( math.sqrt( math.pow( perpendicular[0] - vertex[0], 2) + math.pow( perpendicular[1] - vertex[1], 2) + math.pow( perpendicular[2] - vertex[2], 2) ) *  math.sqrt( math.pow( corner[0] - vertex[0], 2) + math.pow( corner[1] - vertex[1], 2) + math.pow( corner[2] - vertex[2], 2) ) ) ) ) )
+            
+            
+        print(angleD)
+        print(angleR)
+        
+        pygame.draw.polygon(screen, (0,255,0), ((450+angleD[0]*5*math.cos(angleR[0]), 275-angleD[0]*5*math.sin(angleR[0])), (450+angleD[1]*5*math.cos(angleR[1]), 275-angleD[1]*5*math.sin(angleR[1])), (450+angleD[2]*5*math.cos(angleR[2]), 275-angleD[2]*5*math.sin(angleR[2])), (450+angleD[3]*5*math.cos(angleR[3]), 275-angleD[3]*5*math.sin(angleR[3]))), 0)
+        pygame.draw.polygon(screen, (0,0,0), ((450+angleD[0]*5*math.cos(angleR[0]), 275-angleD[0]*5*math.sin(angleR[0])), (450+angleD[1]*5*math.cos(angleR[1]), 275-angleD[1]*5*math.sin(angleR[1])), (450+angleD[2]*5*math.cos(angleR[2]), 275-angleD[2]*5*math.sin(angleR[2])), (450+angleD[3]*5*math.cos(angleR[3]), 275-angleD[3]*5*math.sin(angleR[3]))), 1)
+        #pygame.draw.circle(screen,(0,255,0),(int(450+angleD[0]*5*math.cos(angleR[0])), int(275-angleD[0]*5*math.sin(angleR[0]))),3,0)
+        
+        """
         angleH = []
         angleV = []
         for corner in face.corners:
@@ -110,7 +123,7 @@ while x == False:
         
         pygame.draw.polygon(screen, (0,255,0), ((450+angleH[0]*5, 275-angleV[0]*5), (450+angleH[1]*5, 275-angleV[1]*5), (450+angleH[2]*5, 275-angleV[2]*5), (450+angleH[3]*5, 275-angleV[3]*5)), 0)
         pygame.draw.polygon(screen, (0,0,0), ((450+angleH[0]*5, 275-angleV[0]*5), (450+angleH[1]*5, 275-angleV[1]*5), (450+angleH[2]*5, 275-angleV[2]*5), (450+angleH[3]*5, 275-angleV[3]*5)), 1)
-        #"""
+        """
         #break
     pygame.draw.circle(screen, (0,0,0),(450,275),3,0)
     
