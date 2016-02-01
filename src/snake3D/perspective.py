@@ -8,9 +8,9 @@ import pygame
 #import random
 import math
 class Face:
-    def __init__(self, corner1, corner2, corner3, corner4, num):
-        self.corners = [corner1, corner2, corner3, corner4]
-        self.num = num
+    def __init__(self, *args):
+        self.corners = args
+        #self.num = num
         xSum = 0
         ySum = 0
         zSum = 0
@@ -19,20 +19,29 @@ class Face:
             ySum += corner[1]
             zSum += corner[2]
         
-        self.center = (xSum/4, ySum/4, zSum/4)
+        self.center = (xSum/self.corners.__len__(), ySum/self.corners.__len__(), zSum/self.corners.__len__())
         print(self.center)
 class Cube:
     def __init__(self, x, y, z, length, width, height):
         self.cube = ((x+length,y+width,z+height), (x+length,y+width,z), (x+length,y,z+height), (x+length,y,z), (x,y+width,z+height), (x,y+width,z), (x,y,z+height), (x,y,z))
-        self.faces = [Face(self.cube[0],self.cube[1],self.cube[3],self.cube[2],0),
-                      Face(self.cube[0],self.cube[1],self.cube[5],self.cube[4],1),
-                      Face(self.cube[4],self.cube[5],self.cube[7],self.cube[6],2),
-                      Face(self.cube[6],self.cube[7],self.cube[3],self.cube[2],3),
-                      Face(self.cube[6],self.cube[4],self.cube[0],self.cube[2],4),
-                      Face(self.cube[7],self.cube[5],self.cube[1],self.cube[3],5)]
+        self.faces = [Face(self.cube[0],self.cube[1],self.cube[3],self.cube[2]),
+                      Face(self.cube[0],self.cube[1],self.cube[5],self.cube[4]),
+                      Face(self.cube[4],self.cube[5],self.cube[7],self.cube[6]),
+                      Face(self.cube[6],self.cube[7],self.cube[3],self.cube[2]),
+                      Face(self.cube[6],self.cube[4],self.cube[0],self.cube[2]),
+                      Face(self.cube[7],self.cube[5],self.cube[1],self.cube[3])]
+        
+class SquarePyramid:
+    def __init__(self, x, y, z, length, width, height):
+        self.sqPy = ((x,y+width,z), (x+length,y+width,z), (x+height,y,z), (x,y,z), (x+length/2, y+width/2, z+height))
+        self.faces = [Face(self.sqPy[0],self.sqPy[1],self.sqPy[2],self.sqPy[3]),
+                      Face(self.sqPy[0],self.sqPy[1],self.sqPy[4]),
+                      Face(self.sqPy[1],self.sqPy[2],self.sqPy[4]),
+                      Face(self.sqPy[2],self.sqPy[3],self.sqPy[4]),
+                      Face(self.sqPy[3],self.sqPy[0],self.sqPy[4])]
 global size;
 size = [900,550]
-speed = 20   #float(input("How fast do you want to go?(FPS)"))
+speed = 100   #float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Snake")
@@ -43,7 +52,7 @@ keys = pygame.key.get_pressed()
 screen.fill([0,0,0])
 posH = 0
 posZ = 45
-r = 20
+r = 7
 """
 cube = ((1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1))
 faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
@@ -54,6 +63,8 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
          Face(cube[7],cube[5],cube[1],cube[3],5)]
 """
 shapes = []
+shapes.append(SquarePyramid(-1,-1,-1,2,2,2))
+"""
 shapes.append(Cube(-1,-1,-1,2,2,2))
 shapes.append(Cube(-3,-1,-1,2,2,2))
 shapes.append(Cube(1,-1,-1,2,2,2))
@@ -69,7 +80,7 @@ shapes.append(Cube(-3,-1,-5,2,2,2))
 shapes.append(Cube(7,-1,1,2,2,2))
 shapes.append(Cube(7,-1,-3,2,2,2))
 shapes.append(Cube(7,-1,-5,2,2,2))
-
+"""
 while x == False:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -142,10 +153,12 @@ while x == False:
             else:
                 angleR.append(R)
             
-        print(angleD)
-        
-        pygame.draw.polygon(screen, (0,255,0), ((450+angleD[0]*5*math.cos(angleR[0]), 275-angleD[0]*5*math.sin(angleR[0])), (450+angleD[1]*5*math.cos(angleR[1]), 275-angleD[1]*5*math.sin(angleR[1])), (450+angleD[2]*5*math.cos(angleR[2]), 275-angleD[2]*5*math.sin(angleR[2])), (450+angleD[3]*5*math.cos(angleR[3]), 275-angleD[3]*5*math.sin(angleR[3]))), 0)
-        pygame.draw.polygon(screen, (0,0,0), ((450+angleD[0]*5*math.cos(angleR[0]), 275-angleD[0]*5*math.sin(angleR[0])), (450+angleD[1]*5*math.cos(angleR[1]), 275-angleD[1]*5*math.sin(angleR[1])), (450+angleD[2]*5*math.cos(angleR[2]), 275-angleD[2]*5*math.sin(angleR[2])), (450+angleD[3]*5*math.cos(angleR[3]), 275-angleD[3]*5*math.sin(angleR[3]))), 1)
+        #print(angleD)
+        points = []
+        for i in range(face.corners.__len__()):
+            points.append((450+angleD[i]*5*math.cos(angleR[i]), 275-angleD[i]*5*math.sin(angleR[i])))
+        pygame.draw.polygon(screen, (0,255,0), points, 0)
+        pygame.draw.polygon(screen, (0,0,0), points, 1)
         #pygame.draw.circle(screen,(0,255,0),(int(450+angleD[0]*5*math.cos(angleR[0])), int(275-angleD[0]*5*math.sin(angleR[0]))),3,0)
         
         """
@@ -172,7 +185,7 @@ while x == False:
     screen.blit(text, [0,30])
     text = font.render(str(realZ), False, (255, 255, 255))
     screen.blit(text, [0,60])
-    
+    """
     text = font.render(str(faces[0].num), False, (255, 255, 255))
     screen.blit(text, [300,0])
     text = font.render(str(faces[1].num), False, (255, 255, 255))
@@ -185,7 +198,7 @@ while x == False:
     screen.blit(text, [380,0])
     text = font.render(str(faces[5].num), False, (255, 255, 255))
     screen.blit(text, [400,0])
-    
+    """
     pygame.display.flip()
     clock.tick(speed)
 pygame.quit()
