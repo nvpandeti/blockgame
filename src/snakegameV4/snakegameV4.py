@@ -11,7 +11,7 @@ size = [700,500]
 text = ""
 screen = pygame.display.set_mode(size)
 #screen2 = pygame.image.load('H:\\warploop.gif').convert
-shroom = pygame.image.load('C:\\Users\\NVP\\workspace\\blockgame\\src\\snakegameV4\\shroom.jpg')
+shroom = pygame.image.load('shroom.jpg')
 shroom = pygame.transform.scale(shroom,(10,10))
 pygame.display.set_caption("Snake")
 x = False
