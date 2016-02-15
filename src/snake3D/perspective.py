@@ -14,6 +14,7 @@ class Face:
         xSum = 0
         ySum = 0
         zSum = 0
+        list.append(0)
         for corner in self.corners:
             xSum += corner[0]
             ySum += corner[1]
@@ -21,6 +22,7 @@ class Face:
         
         self.center = (xSum/self.corners.__len__(), ySum/self.corners.__len__(), zSum/self.corners.__len__())
         #print(self.center)
+list = []
 class Cube:
     def __init__(self, x, y, z, length, width, height):
         self.cube = ((x+length,y+width,z+height), (x+length,y+width,z), (x+length,y,z+height), (x+length,y,z), (x,y+width,z+height), (x,y+width,z), (x,y,z+height), (x,y,z))
@@ -71,6 +73,30 @@ class Sphere:
             self.faces.append(Face( self.sphere[(quality-1)*quality+i+1], self.sphere[(quality-1)*quality+i+2], self.sphere[quality*quality+1]))
         self.faces.append(Face( self.sphere[(quality-1)*quality+1], self.sphere[quality*quality], self.sphere[quality*quality+1]))
         
+class Cylinder:
+    def __init__(self, x, y, z, r, h, quality,turn=0, twist=0):
+        self.cylinder = []
+        changeH = 360/quality
+        posH = turn
+        for i in range(quality):
+            self.cylinder.append((x + r * math.cos(math.radians(posH)),
+                                y + r * math.sin(math.radians(posH)),
+                                z+h))
+            posH += changeH
+        posH = turn + twist
+        for i in range(quality):
+            self.cylinder.append((x + r * math.cos(math.radians(posH)),
+                                y + r * math.sin(math.radians(posH)),
+                                z))
+            posH += changeH
+        
+        self.faces = []
+        print(self.cylinder[0:quality])
+        self.faces.append(Face(*self.cylinder[0:quality]))
+        for i in range(quality-1):
+            self.faces.append(Face(self.cylinder[i], self.cylinder[i+1], self.cylinder[i+1+quality], self.cylinder[i+quality]))
+        self.faces.append(Face(self.cylinder[quality-1], self.cylinder[0], self.cylinder[quality], self.cylinder[2*quality-1]))
+        self.faces.append(Face(*self.cylinder[quality:]))
         
         
 global size;
@@ -87,9 +113,9 @@ screen.fill([0,0,0])
 posH = 270
 posZ = -45
 
-realX = 0
-realY = 7
-realZ = 7
+realX = 4.0
+realY = 4.0
+realZ = 4.0
 origin = [0,0,0]
 r = 10
 """
@@ -103,10 +129,10 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
 """
 shapes = []
 #shapes.append(SquarePyramid(-100,-100,-100,90,90,50))
-shapes.append(Sphere(4,4,4,3,8))
-shapes.append(Sphere(4,4,9,2,6))
-shapes.append(Sphere(4,4,12,1,4))
-"""
+shapes.append(Sphere(8,0,2,1.3,8))
+#shapes.append(Sphere(4,4,9,2,6))
+#shapes.append(Sphere(4,4,12,1,4))
+#"""
 shapes.append(Cube(-1,-1,-1,2,2,2))
 shapes.append(Cube(-3,-1,-1,2,2,2))
 shapes.append(Cube(1,-1,-1,2,2,2))
@@ -119,9 +145,10 @@ shapes.append(Cube(-3,-1,1,2,2,2))
 shapes.append(Cube(-3,-1,3,2,2,2))
 shapes.append(Cube(-3,-1,-3,2,2,2))
 shapes.append(Cube(-3,-1,-5,2,2,2))
-shapes.append(Cube(7,-1,1,2,2,2))
-shapes.append(Cube(7,-1,-3,2,2,2))
-shapes.append(Cube(7,-1,-5,2,2,2))
+#shapes.append(Cube(7,-1,1,2,2,2))
+#shapes.append(Cube(7,-1,-3,2,2,2))
+#shapes.append(Cube(7,-1,-5,2,2,2))
+shapes.append(Cylinder(8,0,-5, 1.4, 4, 4, 45, 0))
 #"""
 while x == False:
     for event in pygame.event.get():
@@ -152,13 +179,13 @@ while x == False:
         realY += -.5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
         realZ += -.5 * math.sin(math.radians(posZ))
     if keyboard[pygame.K_a] == 1:
-        realX += .5 * math.sin(math.radians(posH)) * abs(math.sin(math.radians(posZ)))
-        realY += -.5 * math.cos(math.radians(posH)) * abs(math.sin(math.radians(posZ)))
+        realX += .5 * math.sin(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
+        realY += -.5 * math.cos(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
         #realX += math.sqrt((.5 * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (.5 * math.sin(math.radians(posZ)))**2)
         #realY += -math.sqrt((.5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (.5 * math.sin(math.radians(posZ)))**2)
     if keyboard[pygame.K_d] == 1:
-        realX += -.5 * math.sin(math.radians(posH)) * abs(math.sin(math.radians(posZ)))
-        realY += .5 * math.cos(math.radians(posH)) * abs(math.sin(math.radians(posZ)))
+        realX += -.5 * math.sin(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
+        realY += .5 * math.cos(math.radians(posH)) #* abs(math.sin(math.radians(posZ)))
     if keyboard[pygame.K_q] == 1:
         realX += .5 * math.cos(math.radians(posH)) * math.sin(math.radians(posZ))
         realY += .5 * math.sin(math.radians(posH)) * math.sin(math.radians(posZ))
@@ -215,15 +242,6 @@ while x == False:
         angleD = []
         angleR = []
         for corner in face.corners:
-            """
-            v1mag = math.sqrt((0-realX)**2 + (0-realY)**2 + (0-realZ)**2)
-            v2mag = math.sqrt( (corner[0]-realX)**2 + (corner[1]-realY)**2 + (corner[2]-realZ)**2 )
-            
-            v1norm = [(0-realX) / v1mag, (0-realY) / v1mag, (0-realZ) / v1mag]
-            v2norm = [(corner[0]-realX) / v2mag, (corner[1]-realY) / v2mag, (corner[2]-realZ) / v2mag]
-            
-            angleD.append( math.degrees( math.acos( v1norm[0] * v2norm[0] + v1norm[1] * v2norm[1] + v1norm[2] * v2norm[2] ) ) )
-            """
             if(corner not in calculatedCorners):
                 angleD.append( math.degrees( math.acos( ( (origin[0] - realX)*(corner[0] - realX) + (origin[1] - realY)*(corner[1] - realY) + (origin[2] - realZ)*(corner[2] - realZ) ) 
                                                         / ( math.sqrt( ( origin[0] - realX)**2 + ( origin[1] - realY)**2 + ( origin[2] - realZ)**2 ) *  math.sqrt( ( corner[0] - realX)**2 + ( corner[1] - realY)**2 + ( corner[2] - realZ)**2 ) ) ) ) )
@@ -287,20 +305,7 @@ while x == False:
     screen.blit(text, [0,150])
     text = font.render(str(origin[2]), False, (255, 255, 255))
     screen.blit(text, [0,180])
-    """
-    text = font.render(str(faces[0].num), False, (255, 255, 255))
-    screen.blit(text, [300,0])
-    text = font.render(str(faces[1].num), False, (255, 255, 255))
-    screen.blit(text, [320,0])
-    text = font.render(str(faces[2].num), False, (255, 255, 255))
-    screen.blit(text, [340,0])
-    text = font.render(str(faces[3].num), False, (255, 255, 255))
-    screen.blit(text, [360,0])
-    text = font.render(str(faces[4].num), False, (255, 255, 255))
-    screen.blit(text, [380,0])
-    text = font.render(str(faces[5].num), False, (255, 255, 255))
-    screen.blit(text, [400,0])
-    """
+
     pygame.display.flip()
     clock.tick(speed)
 pygame.quit()
