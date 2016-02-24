@@ -23,7 +23,20 @@ class Face:
         self.center = (xSum/self.corners.__len__(), ySum/self.corners.__len__(), zSum/self.corners.__len__())
         
         self.color = color
+        
+        a = (self.corners[1][0] - self.corners[0][0], self.corners[1][1] - self.corners[0][1], self.corners[1][2] - self.corners[0][2])
+        b = (self.corners[2][0] - self.corners[0][0], self.corners[2][1] - self.corners[0][1], self.corners[2][2] - self.corners[0][2])
+        
+        self.normal = ( self.center[0] + (a[1]*b[2] - a[2]*b[1]),
+                        self.center[1] + (a[2]*b[0] - a[0]*b[2]),
+                        self.center[2] + (a[0]*b[1] - a[1]*b[0]) )
         #print(self.center)
+    def __mul__(self, other):
+        return (self.color[0]*other, self.color[1]*other, self.color[2]*other)
+    def __rmul__(self, other):
+        return (self.color[0]*other, self.color[1]*other, self.color[2]*other)
+    
+        
 class Cube:
     def __init__(self, color, x, y, z, length, width, height):
         self.cube = ((x+length,y+width,z+height), (x+length,y+width,z), (x+length,y,z+height), (x+length,y,z), (x,y+width,z+height), (x,y+width,z), (x,y,z+height), (x,y,z))
@@ -111,8 +124,8 @@ class Torus:
         
         for i in range(quality):
             for j in range(quality):
-                self.torus.append(( x + (dM - rM*math.cos(math.radians(posZ)))*math.cos(math.radians(posH)),
-                                   y + (dM - rM*math.cos(math.radians(posZ)))*math.sin(math.radians(posH)),
+                self.torus.append(( x + (dM + rM*math.cos(math.radians(posZ)))*math.cos(math.radians(posH)),
+                                   y + (dM + rM*math.cos(math.radians(posZ)))*math.sin(math.radians(posH)),
                                    z + rM*math.sin(math.radians(posZ))))
                 posZ += changeZ
             posZ = 0
@@ -144,13 +157,14 @@ x = False
 clock = pygame.time.Clock()
 keys = pygame.key.get_pressed()
 screen.fill([0,0,0])
-posH = 270
-posZ = -45
+posH = 30
+posZ = -20
 
-realX = 7.5
-realY = 8.0
-realZ = 8.0
+realX = 0
+realY = -2.0
+realZ = 6.0
 origin = [0,0,0]
+light = [0,0,0]
 r = 10
 """
 cube = ((1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1))
@@ -313,10 +327,14 @@ while x == False:
             if(angleD[i]>150):
                 behind = True
             points.append((450+angleD[i]*15*math.cos(angleR[i]), 275-angleD[i]*15*math.sin(angleR[i])))
+            
+        shading = math.degrees( math.acos( ( (light[0] - face.center[0])*(face.normal[0] - face.center[0]) + (light[1] - face.center[1])*(face.normal[1] - face.center[1]) + (light[2] - face.center[2])*(face.normal[2] - face.center[2]) ) 
+                                                / ( math.sqrt( ( light[0] - face.center[0])**2 + ( light[1] - face.center[1])**2 + ( light[2] - face.center[2])**2 ) *  math.sqrt( ( face.normal[0] - face.center[0])**2 + ( face.normal[1] - face.center[1])**2 + ( face.normal[2] - face.center[2])**2 ) ) ) ) / 180
+        
         if(not behind):
-            pygame.draw.polygon(screen, face.color, points, 0)
+            pygame.draw.polygon(screen, face * shading, points, 0)
             #pygame.draw.polygon(screen, (0,0,0), points, 1)
-            pygame.draw.aalines(screen, BROWN,True, points, 1)
+            #pygame.draw.aalines(screen, BROWN,True, points, 1)
         #pygame.draw.circle(screen,(0,255,0),(int(450+angleD[0]*5*math.cos(angleR[0])), int(275-angleD[0]*5*math.sin(angleR[0]))),3,0)
         """
         angleH = []
@@ -333,8 +351,8 @@ while x == False:
         pygame.draw.polygon(screen, (0,0,0), ((450+angleH[0]*5, 275-angleV[0]*5), (450+angleH[1]*5, 275-angleV[1]*5), (450+angleH[2]*5, 275-angleV[2]*5), (450+angleH[3]*5, 275-angleV[3]*5)), 1)
         """
         #break
-        #pygame.display.flip()
-        #pygame.time.delay(20)
+        pygame.display.flip()
+        pygame.time.delay(20)
     pygame.draw.circle(screen, (0,0,0),(450,275),3,0)
     
     font = pygame.font.Font(None, 40)
