@@ -41,16 +41,16 @@ class Cube:
     def __init__(self, color, x, y, z, length, width, height):
         self.cube = ((x+length,y+width,z+height), (x+length,y+width,z), (x+length,y,z+height), (x+length,y,z), (x,y+width,z+height), (x,y+width,z), (x,y,z+height), (x,y,z))
         self.faces = [Face(color, self.cube[0],self.cube[1],self.cube[3],self.cube[2]),
-                      Face(color, self.cube[0],self.cube[1],self.cube[5],self.cube[4]),
-                      Face(color, self.cube[4],self.cube[5],self.cube[7],self.cube[6]),
-                      Face(color, self.cube[6],self.cube[7],self.cube[3],self.cube[2]),
+                      Face(color, self.cube[0],self.cube[4],self.cube[5],self.cube[1]),
+                      Face(color, self.cube[4],self.cube[6],self.cube[7],self.cube[5]),
+                      Face(color, self.cube[6],self.cube[2],self.cube[3],self.cube[7]),
                       Face(color, self.cube[6],self.cube[4],self.cube[0],self.cube[2]),
-                      Face(color, self.cube[7],self.cube[5],self.cube[1],self.cube[3])]
+                      Face(color, self.cube[7],self.cube[3],self.cube[1],self.cube[5])]
         
 class SquarePyramid:
     def __init__(self, color, x, y, z, length, width, height):
         self.sqPy = ((x,y+width,z), (x+length,y+width,z), (x+length,y,z), (x,y,z), (x+length/2, y+width/2, z+height))
-        self.faces = [Face(color, self.sqPy[0],self.sqPy[1],self.sqPy[2],self.sqPy[3]),
+        self.faces = [Face(color, self.sqPy[0],self.sqPy[3],self.sqPy[2],self.sqPy[1]),
                       Face(color, self.sqPy[0],self.sqPy[1],self.sqPy[4]),
                       Face(color, self.sqPy[1],self.sqPy[2],self.sqPy[4]),
                       Face(color, self.sqPy[2],self.sqPy[3],self.sqPy[4]),
@@ -78,14 +78,14 @@ class Sphere:
         self.faces = []
         for i in range(quality-1):
             self.faces.append(Face(color, self.sphere[0], self.sphere[i+2], self.sphere[i+1]))
-        self.faces.append(Face(color, self.sphere[0], self.sphere[quality], self.sphere[1]))
+        self.faces.append(Face(color, self.sphere[0], self.sphere[1], self.sphere[quality]))
         for i in range(quality-1):
             for j in range(quality-1):
                 self.faces.append(Face(color, self.sphere[i*quality+j+1], self.sphere[i*quality+j+2], self.sphere[(i+1)*quality+j+2], self.sphere[(i+1)*quality+j+1]))
             self.faces.append(Face(color, self.sphere[(i+1)*quality], self.sphere[i*quality+1], self.sphere[(i+1)*quality+1], self.sphere[(i+2)*quality]))
         for i in range(quality-1):
             self.faces.append(Face(color, self.sphere[(quality-1)*quality+i+1], self.sphere[(quality-1)*quality+i+2], self.sphere[quality*quality+1]))
-        self.faces.append(Face(color, self.sphere[(quality-1)*quality+1], self.sphere[quality*quality], self.sphere[quality*quality+1]))
+        self.faces.append(Face(color, self.sphere[(quality-1)*quality+1], self.sphere[quality*quality+1], self.sphere[quality*quality]))
         
 class Cylinder:
     def __init__(self, color, x, y, z, r, h, quality,turn=0, twist=0):
@@ -105,7 +105,10 @@ class Cylinder:
             posH += changeH
         
         self.faces = []
-        self.faces.append(Face(color, *self.cylinder[0:quality]))
+        top = []
+        for i in range(quality):
+            top.insert(0, self.cylinder[i])
+        self.faces.append(Face(color, *top))
         for i in range(quality-1):
             self.faces.append(Face(color, self.cylinder[i], self.cylinder[i+1], self.cylinder[i+1+quality], self.cylinder[i+quality]))
         self.faces.append(Face(color, self.cylinder[quality-1], self.cylinder[0], self.cylinder[quality], self.cylinder[2*quality-1]))
@@ -139,6 +142,37 @@ class Torus:
         for i in range(quality-1):
             self.faces.append(Face(color, self.torus[(quality-1)*quality+i], self.torus[(quality-1)*quality+i+1], self.torus[i+1], self.torus[i]))
         self.faces.append(Face(color, self.torus[quality*quality-1], self.torus[(quality-1)*quality], self.torus[0], self.torus[quality-1]))
+
+class LightSource:
+    def __init__(self, color, x, y, z, r, quality):
+        self.sphere = []
+        posH = 0
+        posZ = 90
+        changeH = 360/quality
+        changeZ = 180/(quality+1)
+        self.sphere.append((x,y,z-r))
+        posZ += changeZ
+        for i in range(quality):
+            for j in range(quality):
+                self.sphere.append((x - r * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)),
+                                    y - r * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)),
+                                    z - r * math.sin(math.radians(posZ))))
+                posH += changeH
+            posH=0
+            posZ += changeZ
+        self.sphere.append((x,y,z+r))
+        
+        self.faces = []
+        for i in range(quality-1):
+            self.faces.append(Face(color, self.sphere[0], self.sphere[i+2], self.sphere[i+1]))
+        self.faces.append(Face(color, self.sphere[0], self.sphere[1], self.sphere[quality]))
+        for i in range(quality-1):
+            for j in range(quality-1):
+                self.faces.append(Face(color, self.sphere[i*quality+j+1], self.sphere[i*quality+j+2], self.sphere[(i+1)*quality+j+2], self.sphere[(i+1)*quality+j+1]))
+            self.faces.append(Face(color, self.sphere[(i+1)*quality], self.sphere[i*quality+1], self.sphere[(i+1)*quality+1], self.sphere[(i+2)*quality]))
+        for i in range(quality-1):
+            self.faces.append(Face(color, self.sphere[(quality-1)*quality+i+2], self.sphere[quality*quality+1], self.sphere[(quality-1)*quality+i+1]))
+        self.faces.append(Face(color, self.sphere[(quality-1)*quality+1], self.sphere[quality*quality+1], self.sphere[quality*quality]))
         
 global size;
 size = [900,550]
@@ -148,6 +182,7 @@ BLUE = (0,0,255)
 PURPLE = (200,0,200)
 ORANGE = (255,100,0)
 BROWN = (100,50,30)
+WHITE = (255,255,255)
 speed = 30   #float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -157,14 +192,14 @@ x = False
 clock = pygame.time.Clock()
 keys = pygame.key.get_pressed()
 screen.fill([0,0,0])
-posH = 30
-posZ = -20
+posH = 50
+posZ = -31
 
-realX = 0
-realY = -2.0
-realZ = 6.0
+realX = -2
+realY = -6.0
+realZ = 6.5
 origin = [0,0,0]
-light = [0,0,0]
+light = [0,0,3]
 r = 10
 """
 cube = ((1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1))
@@ -177,8 +212,10 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
 """
 shapes = []
 #shapes.append(SquarePyramid(-100,-100,-100,90,90,50))
-shapes.append(Sphere(ORANGE, 8,0,2,1.3,18))
-shapes.append(Torus(RED, 6,4,2,1,2,20))
+shapes.append(Sphere(ORANGE, 8,0,2,1.3,15))
+shapes.append(Torus(BROWN, 6,4,2,1,3,20))
+shapes.append(LightSource(WHITE, light[0], light[1], light[2], .5,10))
+shapes.append(Cube(GREEN, 5,3,-3,2,2,2))
 #shapes.append(Sphere(PURPLE, 9,0,2,1.3,18))
 """
 shapes.append(Sphere(BROWN, 8,0,0,1.3,15))
@@ -205,7 +242,8 @@ shapes.append(Cube(GREEN, -3,-1,-5,2,2,2))
 #shapes.append(Cube(7,-1,-3,2,2,2))
 #shapes.append(Cube(7,-1,-5,2,2,2))
 #"""
-#shapes.append(Cylinder(BLUE, 8,0,-5, 1.4, 4, 50, 90, 0))
+shapes.append(Cylinder(RED, 8,0,-5, 1.4, 4, 50, 90, 0))
+shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
 #"""
 while x == False:
     for event in pygame.event.get():
@@ -256,6 +294,11 @@ while x == False:
     origin[0] = realX + r * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
     origin[1] = realY + r * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
     origin[2] = realZ + r * math.sin(math.radians(posZ))
+    """
+    light[0] = realX
+    light[1] = realY
+    light[2] = realZ
+    """
     """
     if keyboard[pygame.K_LEFT] == 1:
         posH+=1
@@ -334,7 +377,7 @@ while x == False:
         if(not behind):
             pygame.draw.polygon(screen, face * shading, points, 0)
             #pygame.draw.polygon(screen, (0,0,0), points, 1)
-            #pygame.draw.aalines(screen, BROWN,True, points, 1)
+            #pygame.draw.aalines(screen, (100,100,100),True, points, 1)
         #pygame.draw.circle(screen,(0,255,0),(int(450+angleD[0]*5*math.cos(angleR[0])), int(275-angleD[0]*5*math.sin(angleR[0]))),3,0)
         """
         angleH = []
@@ -351,8 +394,8 @@ while x == False:
         pygame.draw.polygon(screen, (0,0,0), ((450+angleH[0]*5, 275-angleV[0]*5), (450+angleH[1]*5, 275-angleV[1]*5), (450+angleH[2]*5, 275-angleV[2]*5), (450+angleH[3]*5, 275-angleV[3]*5)), 1)
         """
         #break
-        pygame.display.flip()
-        pygame.time.delay(20)
+        #pygame.display.flip()
+        #pygame.time.delay(20)
     pygame.draw.circle(screen, (0,0,0),(450,275),3,0)
     
     font = pygame.font.Font(None, 40)
