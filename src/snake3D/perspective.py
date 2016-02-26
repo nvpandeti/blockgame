@@ -91,17 +91,17 @@ class Cylinder:
     def __init__(self, color, x, y, z, r, h, quality,turn=0, twist=0):
         self.cylinder = []
         changeH = 360/quality
-        posH = turn
+        posH = 0
         for i in range(quality):
             self.cylinder.append((x + r * math.cos(math.radians(posH)),
                                 y + r * math.sin(math.radians(posH)),
-                                z+h))
+                                z+h/2))
             posH += changeH
-        posH = turn + twist
+        posH = twist
         for i in range(quality):
             self.cylinder.append((x + r * math.cos(math.radians(posH)),
                                 y + r * math.sin(math.radians(posH)),
-                                z))
+                                z-h/2))
             posH += changeH
         
         self.faces = []
@@ -115,7 +115,7 @@ class Cylinder:
         self.faces.append(Face(color, *self.cylinder[quality:]))
         
 class Torus:
-    def __init__(self, color, x, y, z, r1, r2, quality):
+    def __init__(self, color, x, y, z, r1, r2, quality, yaw=0, pitch=0,roll=0):
         self.torus = []
         posH = 0
         posZ = 0
@@ -127,9 +127,40 @@ class Torus:
         
         for i in range(quality):
             for j in range(quality):
-                self.torus.append(( x + (dM + rM*math.cos(math.radians(posZ)))*math.cos(math.radians(posH)),
-                                   y + (dM + rM*math.cos(math.radians(posZ)))*math.sin(math.radians(posH)),
-                                   z + rM*math.sin(math.radians(posZ))))
+                tempX = x + (dM + rM*math.cos(math.radians(posZ)))*math.cos(math.radians(posH))
+                tempY = y + (dM + rM*math.cos(math.radians(posZ)))*math.sin(math.radians(posH))
+                tempZ = z + rM*math.sin(math.radians(posZ))
+                #"""
+                if(yaw!=0):
+                    tempR = math.sqrt((tempX-x)**2 + (tempY-y)**2)
+                    tempAngle = math.degrees(math.atan2(tempY - y, tempX - x))
+                    tempX = x + tempR * math.cos(math.radians(tempAngle + yaw))
+                    tempY = y + tempR * math.sin(math.radians(tempAngle + yaw))
+                if(pitch!=0):
+                    tempR = math.sqrt((tempX-x)**2 + (tempZ-z)**2)
+                    tempAngle = math.degrees(math.atan2(tempZ - z, tempX - x))
+                    tempX = x + tempR * math.cos(math.radians(tempAngle + pitch))
+                    tempZ = z + tempR * math.sin(math.radians(tempAngle + pitch))
+                if(roll!=0):
+                    tempR = math.sqrt((tempY-y)**2 + (tempZ-z)**2)
+                    tempAngle = math.degrees(math.atan2(tempZ - z, tempY - y))
+                    tempY = y + tempR * math.cos(math.radians(tempAngle + roll))
+                    tempZ = z + tempR * math.sin(math.radians(tempAngle + roll))
+                """
+                tempRYaw = math.sqrt((tempX-x)**2 + (tempY-y)**2)
+                tempRPitch = math.sqrt((tempX-x)**2 + (tempZ-z)**2)
+                tempRRoll = math.sqrt((tempY-y)**2 + (tempZ-z)**2)
+                
+                tempAngleYaw = math.degrees(math.atan2(tempY - y, tempX - x))
+                tempAnglePitch = math.degrees(math.atan2(tempZ - z, tempX - x))
+                tempAngleRoll = math.degrees(math.atan2(tempZ - z, tempY - y))
+                
+                tempX = x + tempRYaw * math.cos(math.radians(tempAngleYaw + yaw)) + tempRPitch * math.cos(math.radians(tempAnglePitch + pitch))
+                tempY = y + tempRYaw * math.sin(math.radians(tempAngleYaw + yaw)) + tempRRoll * math.cos(math.radians(tempAngleRoll + roll))
+                tempZ = z + tempRPitch * math.sin(math.radians(tempAnglePitch + pitch)) + tempRRoll * math.sin(math.radians(tempAngleRoll + roll))
+                """
+                self.torus.append((tempX, tempY, tempZ))
+                
                 posZ += changeZ
             posZ = 0
             posH += changeH
@@ -183,7 +214,7 @@ PURPLE = (200,0,200)
 ORANGE = (255,100,0)
 BROWN = (100,50,30)
 WHITE = (255,255,255)
-speed = 30   #float(input("How fast do you want to go?(FPS)"))
+speed = 40   #float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Perspective")
@@ -192,12 +223,12 @@ x = False
 clock = pygame.time.Clock()
 keys = pygame.key.get_pressed()
 screen.fill([0,0,0])
-posH = 50
-posZ = -31
+posH = .001
+posZ = .001
 
-realX = -2
-realY = -6.0
-realZ = 6.5
+realX = 0
+realY = 0
+realZ = 0
 origin = [0,0,0]
 light = [0,0,3]
 r = 10
@@ -212,17 +243,17 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
 """
 shapes = []
 #shapes.append(SquarePyramid(-100,-100,-100,90,90,50))
-shapes.append(Sphere(ORANGE, 8,0,2,1.3,15))
-shapes.append(Torus(BROWN, 6,4,2,1,3,20))
-shapes.append(LightSource(WHITE, light[0], light[1], light[2], .5,10))
-shapes.append(Cube(GREEN, 5,3,-3,2,2,2))
+#shapes.append(Sphere(ORANGE, 8,0,2,1.3,15))
+shapes.append(Torus(RED, 8,0,0,1,2,25, 45, 135, 135))
+#shapes.append(LightSource(WHITE, light[0], light[1], light[2], .5,10))
+#shapes.append(Cube(GREEN, 5,3,-3,2,2,2))
 #shapes.append(Sphere(PURPLE, 9,0,2,1.3,18))
 """
 shapes.append(Sphere(BROWN, 8,0,0,1.3,15))
 shapes.append(Sphere(BROWN, 10,0,0,1.3,15))
 shapes.append(Cylinder(BROWN, 9,0,0, 1.4, 5, 50, 90, 0))
 shapes.append(Sphere(BROWN, 9,0,5,1.4,18))
-"""
+#"""
 #shapes.append(Sphere(4,4,9,2,6))
 #shapes.append(Sphere(4,4,12,1,4))
 """
@@ -242,8 +273,8 @@ shapes.append(Cube(GREEN, -3,-1,-5,2,2,2))
 #shapes.append(Cube(7,-1,-3,2,2,2))
 #shapes.append(Cube(7,-1,-5,2,2,2))
 #"""
-shapes.append(Cylinder(RED, 8,0,-5, 1.4, 4, 50, 90, 0))
-shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
+#shapes.append(Cylinder(RED, 8,0,-5, 1.4, 4, 50, 90, 0))
+#shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
 #"""
 while x == False:
     for event in pygame.event.get():
@@ -254,11 +285,11 @@ while x == False:
     keyboard = pygame.key.get_pressed()
     
     if keyboard[pygame.K_LEFT] == 1:
-        posH-=3
+        posH-=5
         if posH<0:
             posH=359
     if keyboard[pygame.K_RIGHT] == 1:
-        posH+=3
+        posH+=5
         if posH>=360:
             posH=0
     if keyboard[pygame.K_DOWN] == 1 and posZ>-89:
