@@ -35,6 +35,8 @@ class Face:
         return (self.color[0]*other, self.color[1]*other, self.color[2]*other)
     def __rmul__(self, other):
         return (self.color[0]*other, self.color[1]*other, self.color[2]*other)
+    def getDist(self, realX, realY, realZ):
+        return math.sqrt((realX - self.center[0])**2 + (realY - self.center[1])**2 + (realZ - self.center[2])**2)
     
         
 class Cube:
@@ -130,7 +132,7 @@ class Torus:
                 tempX = x + (dM + rM*math.cos(math.radians(posZ)))*math.cos(math.radians(posH))
                 tempY = y + (dM + rM*math.cos(math.radians(posZ)))*math.sin(math.radians(posH))
                 tempZ = z + rM*math.sin(math.radians(posZ))
-                #"""
+                """
                 if(yaw!=0):
                     tempR = math.sqrt((tempX-x)**2 + (tempY-y)**2)
                     tempAngle = math.degrees(math.atan2(tempY - y, tempX - x))
@@ -158,7 +160,7 @@ class Torus:
                 tempX = x + tempRYaw * math.cos(math.radians(tempAngleYaw + yaw)) + tempRPitch * math.cos(math.radians(tempAnglePitch + pitch))
                 tempY = y + tempRYaw * math.sin(math.radians(tempAngleYaw + yaw)) + tempRRoll * math.cos(math.radians(tempAngleRoll + roll))
                 tempZ = z + tempRPitch * math.sin(math.radians(tempAnglePitch + pitch)) + tempRRoll * math.sin(math.radians(tempAngleRoll + roll))
-                """
+                #"""
                 self.torus.append((tempX, tempY, tempZ))
                 
                 posZ += changeZ
@@ -230,8 +232,9 @@ realX = 0
 realY = 0
 realZ = 0
 origin = [0,0,0]
-light = [0,0,3]
+light = [0,0,0]
 r = 10
+movement = .25
 """
 cube = ((1,1,1), (1,1,-1), (1,-1,1), (1,-1,-1), (-1,1,1), (-1,1,-1), (-1,-1,1), (-1,-1,-1))
 faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
@@ -243,15 +246,27 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
 """
 shapes = []
 #shapes.append(SquarePyramid(-100,-100,-100,90,90,50))
-#shapes.append(Sphere(ORANGE, 8,0,2,1.3,15))
-shapes.append(Torus(RED, 8,0,0,1,2,25, 45, 135, 135))
-#shapes.append(LightSource(WHITE, light[0], light[1], light[2], .5,10))
+shapes.append(Sphere((200,200,200), 36,0,0,.0015,10))
+shapes.append(Sphere((200,100,30), 67,0,0,.0037,10))
+shapes.append(Sphere(GREEN, 93,0,0,.004,10))
+shapes.append(Sphere((150,150,150), 93,.238,0,.001,10))
+shapes.append(Sphere((200,0,0), 141.6,0,0,.0021,10))
+shapes.append(Sphere((207,157,52), 483.5,0,0,.0444,10))
+shapes.append(Sphere((255,200,100), 888.8,0,0,.0375,10))
+shapes.append(Torus((220,220,220), 888.8,0,0,.0571, .0731,20))
+shapes.append(Torus((170,170,170), 888.8,0,0,.0759, .085,20))
+shapes.append(Sphere((76,220,252),1783.7,0,0,.016,10))
+shapes.append(Sphere((50,123,250),2797.8,0,0,.015,10))
+#shapes.append(Torus(RED, 8,0,2,2,2.7,20, 0, 15, 15))
+#shapes.append(Torus(GREEN, 8,0,2,2.7,3.4,20, 0, 15, 15))
+#shapes.append(Torus(BLUE, 8,0,2,3.4,4.1,20, 0, 15, 15))
+shapes.append(LightSource((255,255,0), light[0], light[1], light[2], .5,10))
 #shapes.append(Cube(GREEN, 5,3,-3,2,2,2))
 #shapes.append(Sphere(PURPLE, 9,0,2,1.3,18))
 """
 shapes.append(Sphere(BROWN, 8,0,0,1.3,15))
 shapes.append(Sphere(BROWN, 10,0,0,1.3,15))
-shapes.append(Cylinder(BROWN, 9,0,0, 1.4, 5, 50, 90, 0))
+shapes.append(Cylinder(BROWN, 9,0,2.5, 1.4, 5, 50, 90, 0))
 shapes.append(Sphere(BROWN, 9,0,5,1.4,18))
 #"""
 #shapes.append(Sphere(4,4,9,2,6))
@@ -285,41 +300,45 @@ while x == False:
     keyboard = pygame.key.get_pressed()
     
     if keyboard[pygame.K_LEFT] == 1:
-        posH-=5
+        posH-=3
         if posH<0:
             posH=359
     if keyboard[pygame.K_RIGHT] == 1:
-        posH+=5
+        posH+=3
         if posH>=360:
             posH=0
-    if keyboard[pygame.K_DOWN] == 1 and posZ>-89:
-        posZ-=2
-    if keyboard[pygame.K_UP] == 1 and posZ<89:
-        posZ+=2
+    if keyboard[pygame.K_DOWN] == 1:
+        posZ-=5
+        if(posZ<-89):
+            posZ += 5
+    if keyboard[pygame.K_UP] == 1:
+        posZ+=5
+        if(posZ>89):
+            posZ -= 5
     if keyboard[pygame.K_w] == 1:
-        realX += .5 * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
-        realY += .5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
-        realZ += .5 * math.sin(math.radians(posZ))
+        realX += movement * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
+        realY += movement * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
+        realZ += movement * math.sin(math.radians(posZ))
     if keyboard[pygame.K_s] == 1:
-        realX += -.5 * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
-        realY += -.5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
-        realZ += -.5 * math.sin(math.radians(posZ))
+        realX += -movement * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
+        realY += -movement * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
+        realZ += -movement * math.sin(math.radians(posZ))
     if keyboard[pygame.K_a] == 1:
-        realX += .5 * math.sin(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
-        realY += -.5 * math.cos(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
-        #realX += math.sqrt((.5 * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (.5 * math.sin(math.radians(posZ)))**2)
-        #realY += -math.sqrt((.5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (.5 * math.sin(math.radians(posZ)))**2)
+        realX += movement * math.sin(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
+        realY += -movement * math.cos(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
+        #realX += math.sqrt((movement * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (movement * math.sin(math.radians(posZ)))**2)
+        #realY += -math.sqrt((movement * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (movement * math.sin(math.radians(posZ)))**2)
     if keyboard[pygame.K_d] == 1:
-        realX += -.5 * math.sin(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
-        realY += .5 * math.cos(math.radians(posH)) #* abs(math.sin(math.radians(posZ)))
+        realX += -movement * math.sin(math.radians(posH))# * abs(math.sin(math.radians(posZ)))
+        realY += movement * math.cos(math.radians(posH)) #* abs(math.sin(math.radians(posZ)))
     if keyboard[pygame.K_q] == 1:
-        realX += .5 * math.cos(math.radians(posH)) * math.sin(math.radians(posZ))
-        realY += .5 * math.sin(math.radians(posH)) * math.sin(math.radians(posZ))
-        realZ += -math.sqrt((.5 * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (.5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2)
+        realX += movement * math.cos(math.radians(posH)) * math.sin(math.radians(posZ))
+        realY += movement * math.sin(math.radians(posH)) * math.sin(math.radians(posZ))
+        realZ += -math.sqrt((movement * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (movement * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2)
     if keyboard[pygame.K_2] == 1:
-        realX += -.5 * math.cos(math.radians(posH)) * math.sin(math.radians(posZ))
-        realY += -.5 * math.sin(math.radians(posH)) * math.sin(math.radians(posZ))
-        realZ += math.sqrt((.5 * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (.5 * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2)
+        realX += -movement * math.cos(math.radians(posH)) * math.sin(math.radians(posZ))
+        realY += -movement * math.sin(math.radians(posH)) * math.sin(math.radians(posZ))
+        realZ += math.sqrt((movement * math.cos(math.radians(posH)) * math.cos(math.radians(posZ)))**2 + (movement * math.sin(math.radians(posH)) * math.cos(math.radians(posZ)))**2)
     if keyboard[pygame.K_t] == 1:
         realX, realY, realZ = origin
     origin[0] = realX + r * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
@@ -353,6 +372,7 @@ while x == False:
     for s in shapes:
         for face in s.faces:
             faces.append(face)
+    """
     centerDists = []
     for face in faces:
         centerDists.append(math.sqrt((realX - face.center[0])**2 + (realY - face.center[1])**2 + (realZ - face.center[2])**2))
@@ -366,7 +386,8 @@ while x == False:
                 temp = centerDists[j]
                 centerDists[j] = centerDists[j+1]
                 centerDists[j+1] = temp
-        
+    #"""
+    faces = sorted(faces, key = lambda face:face.getDist(realX, realY, realZ), reverse = True)
     screen.fill([0,0,0])
     calculatedCorners = {}
     for face in faces:
@@ -381,8 +402,14 @@ while x == False:
                 t = - ( (origin[0] - realX)*(realX - corner[0]) + (origin[1] - realY)*(realY - corner[1]) + (origin[2] - realZ)*(realZ - corner[2]) ) / ( (origin[0] - realX)**2 + (origin[1] - realY)**2 + (origin[2] - realZ)**2 )
                 vertex = [realX + (origin[0] - realX)*t, realY + (origin[1] - realY)*t, realZ + (origin[2] - realZ)*t]
                 perpendicular = [vertex[0] - (origin[1] - realY), vertex[1] + (origin[0] - realX), vertex[2]]
-                R = math.acos( ( (perpendicular[0] - vertex[0])*(corner[0] - vertex[0]) + (perpendicular[1] - vertex[1])*(corner[1] - vertex[1]) + (perpendicular[2] - vertex[2])*(corner[2] - vertex[2]) ) 
-                               / ( math.sqrt( ( perpendicular[0] - vertex[0])**2 + ( perpendicular[1] - vertex[1])**2 + ( perpendicular[2] - vertex[2])**2 ) *  math.sqrt( ( corner[0] - vertex[0])**2 + ( corner[1] - vertex[1])**2 + ( corner[2] - vertex[2])**2 ) ) )
+                #print( math.sqrt( ( perpendicular[0] - vertex[0])**2 + ( perpendicular[1] - vertex[1])**2 + ( perpendicular[2] - vertex[2])**2 ) *  math.sqrt( ( corner[0] - vertex[0])**2 + ( corner[1] - vertex[1])**2 + ( corner[2] - vertex[2])**2 ) )
+                tempR = ( (perpendicular[0] - vertex[0])*(corner[0] - vertex[0]) + (perpendicular[1] - vertex[1])*(corner[1] - vertex[1]) + (perpendicular[2] - vertex[2])*(corner[2] - vertex[2]) ) / ( math.sqrt( ( perpendicular[0] - vertex[0])**2 + ( perpendicular[1] - vertex[1])**2 + ( perpendicular[2] - vertex[2])**2 ) *  math.sqrt( ( corner[0] - vertex[0])**2 + ( corner[1] - vertex[1])**2 + ( corner[2] - vertex[2])**2 ) )
+                if(tempR<-1):
+                    tempR = -1
+                if(tempR>1):
+                    tempR = 1
+                #print(tempR)
+                R = math.acos( tempR )
                 if(corner[2]<perpendicular[2]):
                     angleR.append(2*math.pi - R)
                 else:
@@ -404,11 +431,11 @@ while x == False:
             
         shading = math.degrees( math.acos( ( (light[0] - face.center[0])*(face.normal[0] - face.center[0]) + (light[1] - face.center[1])*(face.normal[1] - face.center[1]) + (light[2] - face.center[2])*(face.normal[2] - face.center[2]) ) 
                                                 / ( math.sqrt( ( light[0] - face.center[0])**2 + ( light[1] - face.center[1])**2 + ( light[2] - face.center[2])**2 ) *  math.sqrt( ( face.normal[0] - face.center[0])**2 + ( face.normal[1] - face.center[1])**2 + ( face.normal[2] - face.center[2])**2 ) ) ) ) / 180
-        
+        #shading = 1
         if(not behind):
             pygame.draw.polygon(screen, face * shading, points, 0)
             #pygame.draw.polygon(screen, (0,0,0), points, 1)
-            #pygame.draw.aalines(screen, (100,100,100),True, points, 1)
+            pygame.draw.aalines(screen, face * shading,True, points, 1)
         #pygame.draw.circle(screen,(0,255,0),(int(450+angleD[0]*5*math.cos(angleR[0])), int(275-angleD[0]*5*math.sin(angleR[0]))),3,0)
         """
         angleH = []
@@ -427,7 +454,7 @@ while x == False:
         #break
         #pygame.display.flip()
         #pygame.time.delay(20)
-    pygame.draw.circle(screen, (0,0,0),(450,275),3,0)
+    #pygame.draw.circle(screen, (0,0,0),(450,275),3,0)
     
     font = pygame.font.Font(None, 40)
     text = font.render(str(realX), False, (255, 255, 255))

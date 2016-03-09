@@ -5,7 +5,7 @@ Created on Dec 26, 2013
 '''
 import pygame
 import random
-speed = float(input("How fast do you want to go?(FPS)"))
+speed = 20#float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 size = [659,439]
 screen = pygame.display.set_mode(size)
@@ -44,7 +44,7 @@ while x == False:
             x = True
         counter=counter+2
     counter=0
-    print(position)
+    #print(position)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             x = True

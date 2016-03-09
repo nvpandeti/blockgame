@@ -5,7 +5,7 @@ Created on Apr 3, 2014
 '''
 import pygame
 import random
-speed = float(input("How fast do you want to go?(FPS)"))
+speed = 20#float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 size = [700,500]
 text = ""
@@ -65,7 +65,7 @@ while w==False:
                     w = True
                     print("quit")
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RIGHT and safetyR and safetyBack:
+                    if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and safetyR and safetyBack:
                         KR = True
                         KD = False
                         KL = False
@@ -74,7 +74,7 @@ while w==False:
                         safetyL = False
                         safetyU = True
                         safetyBack = False
-                    elif event.key == pygame.K_DOWN and safetyD and safetyBack:
+                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and safetyD and safetyBack:
                         KR = False
                         KD = True
                         KL = False
@@ -83,7 +83,7 @@ while w==False:
                         safetyL = True
                         safetyU = False
                         safetyBack = False
-                    elif event.key == pygame.K_LEFT and safetyL and safetyBack:
+                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and safetyL and safetyBack:
                         KR = False
                         KD = False
                         KL = True
@@ -92,7 +92,7 @@ while w==False:
                         safetyD = True
                         safetyU = True
                         safetyBack = False
-                    elif event.key == pygame.K_UP and safetyU and safetyBack:
+                    elif (event.key == pygame.K_UP or event.key == pygame.K_w) and safetyU and safetyBack:
                         KR = False
                         KD = False
                         KL = False

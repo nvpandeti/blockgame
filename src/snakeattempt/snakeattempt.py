@@ -5,7 +5,7 @@ Created on Dec 14, 2013
 '''
 import pygame
 import random
-speed = float(input("How fast do you want to go?(FPS)"))
+speed = 20 #float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 size = [700,500]
 text = ""
@@ -36,7 +36,7 @@ while w==False:
     G = 0
     B = 0
     Score = 0
-    boost = 0
+    boost = 1
     position = []
     counter = 0
     screen.fill([0,0,0])
@@ -58,7 +58,7 @@ while w==False:
                     w = True
                     print("quit")
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RIGHT and safetyR and safetyBack:
+                    if (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and safetyR and safetyBack:
                         KR = True
                         KD = False
                         KL = False
@@ -67,7 +67,7 @@ while w==False:
                         safetyL = False
                         safetyU = True
                         safetyBack = False
-                    elif event.key == pygame.K_DOWN and safetyD and safetyBack:
+                    elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and safetyD and safetyBack:
                         KR = False
                         KD = True
                         KL = False
@@ -76,7 +76,7 @@ while w==False:
                         safetyL = True
                         safetyU = False
                         safetyBack = False
-                    elif event.key == pygame.K_LEFT and safetyL and safetyBack:
+                    elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and safetyL and safetyBack:
                         KR = False
                         KD = False
                         KL = True
@@ -85,7 +85,7 @@ while w==False:
                         safetyD = True
                         safetyU = True
                         safetyBack = False
-                    elif event.key == pygame.K_UP and safetyU and safetyBack:
+                    elif (event.key == pygame.K_UP or event.key == pygame.K_w) and safetyU and safetyBack:
                         KR = False
                         KD = False
                         KL = False
@@ -95,23 +95,23 @@ while w==False:
                         safetyL = True
                         safetyBack = False
                     elif event.key == pygame.K_SPACE:
-                        boost = 1
+                        boost = 2
                         Colorboost = True
                     elif event.key == pygame.K_p:
                         Pause = True
                         safetyp = 0
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
-                        boost = 0
+                        boost = 1
                         Colorboost = False
             if KR:
-                Blockx=Blockx+1+boost
+                Blockx=Blockx+1*boost
             elif KD:
-                Blocky=Blocky+1+boost
+                Blocky=Blocky+1*boost
             elif KL:
-                Blockx=Blockx-1-boost
+                Blockx=Blockx-1*boost
             elif KU:
-                Blocky=Blocky-1-boost
+                Blocky=Blocky-1*boost
             safetyBack = True
 #            if Score==0:
 #                screen.fill([0,0,0])

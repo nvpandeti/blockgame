@@ -5,7 +5,7 @@ Created on Mar 15, 2014
 '''
 import pygame
 import random
-speed = float(input("How fast do you want to go?(FPS)"))
+speed = 20#float(input("How fast do you want to go?(FPS)"))
 pygame.init()
 length = 400
 width = 400
