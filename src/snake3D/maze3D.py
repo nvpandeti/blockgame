@@ -1,8 +1,9 @@
 '''
-Created on Jan 17, 2016
+Created on Mar 15, 2016
 
-@author: NVP
+@author: Nitu
 '''
+
 
 import pygame
 import random
@@ -233,7 +234,7 @@ realX = .01
 realY = .01
 realZ = 1.5
 origin = [0,0,0]
-light = [0,0,0]
+light = [0,0,5]
 r = 10
 movement = .25
 """
@@ -295,6 +296,121 @@ shapes.append(Cube(GREEN, -3,-1,-5,2,2,2))
 #shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
 #"""
 
+rows = 16
+cols = 8
+width = 3
+height = 1
+
+maze = [[[False,1,1,1,1] for x in range(cols)] for x in range(rows)]
+def inBounds(a,b):
+    return a>=0 and b>=0 and a<rows and b<cols
+
+
+def goTo(a, b):
+    possible = []
+
+    if(inBounds(a-1, b) and not maze[a-1][b][0]):
+        possible.append(1)
+    if(inBounds(a, b+1) and not maze[a][b+1][0]):
+        possible.append(2)
+    if(inBounds(a+1, b) and not maze[a+1][b][0]):
+        possible.append(3)
+    if(inBounds(a, b-1) and not maze[a][b-1][0]):
+        possible.append(4)
+    
+    maze[a][b][0] = True
+    if(possible.__len__() == 0):
+        return 0
+    #return possible[random.randrange(0,possible.__len__())]
+    #return choice(possible)
+    #"""
+    evens = list(filter(lambda x : x%2==0, possible))
+    odds = list(filter(lambda x : x%2==1, possible))
+    
+    if(evens.__len__()==0):
+        return choice(odds)
+    if(odds.__len__()==0):
+        return choice(evens)
+    if(.5*abs(peek[0]-X)>abs(peek[1]-Y)):
+        if(random.randrange(0,10)<9):
+            return choice(evens)
+        else:
+            return choice(odds)
+    elif(abs(peek[0]-X)>abs(peek[1]-Y)):
+        return choice(possible)
+    elif(abs(peek[0]-X)<.5*abs(peek[1]-Y)):
+        if(random.randrange(0,10)<9):
+            return choice(odds)
+        else:
+            return choice(evens)
+    else:
+        return choice(possible)
+    #"""
+X = rows//2
+Y = cols//2
+stack = []
+stack.append([0,0])
+
+while(not stack.__len__() == 0):
+    peek = []
+    peek.append(stack[stack.__len__()-1][0])
+    peek.append(stack[stack.__len__()-1][1])
+    direction = goTo(peek[0], peek[1])
+    #print("Before = "+str(peek[0]) +" "+ str(peek[1]))
+    maze[peek[0]][peek[1]][0] = True
+    if(direction==0):
+        stack.pop()
+    else:
+        maze[peek[0]][peek[1]][direction] = 0
+        if(direction==1):
+            peek[0] -= 1
+            maze[peek[0]][peek[1]][3] = 0
+        elif(direction==2):
+            peek[1] += 1
+            maze[peek[0]][peek[1]][4] = 0
+        elif(direction==3):
+            peek[0] += 1
+            maze[peek[0]][peek[1]][1] = 0
+        elif(direction==4):
+            peek[1] -= 1
+            maze[peek[0]][peek[1]][2] = 0
+        stack.append([peek[0], peek[1]])
+    
+maze[0][0][4] = 0
+maze[maze.__len__()-1][maze[0].__len__()-1][2] = 0
+
+for i in range(rows+1):
+    for j in range(cols+1):
+        for h in range(height):
+            shapes.append(Cube(GREEN, j*width,i*width,h,1,1,1))
+
+for i in range(rows):
+        for j in range(cols):
+            if(maze[i][j][1]==1):
+                for h in range(height):
+                    for w in range(1,width):
+                        shapes.append(Cube(GREEN, j*width+w,i*width,h,1,1,1))
+
+            if(maze[i][j][4]==1):
+                for h in range(height):
+                    for w in range(1,width):
+                        shapes.append(Cube(GREEN, j*width,i*width+w,h,1,1,1))
+
+            if(i==rows-1 or j ==cols-1):
+                if(maze[i][j][2]==1):
+                    for h in range(height):
+                        for w in range(1,width):
+                            shapes.append(Cube(GREEN, j*width+width,i*width+w,h,1,1,1))
+                            
+                if(maze[i][j][3]==1):
+                    for h in range(height):
+                        for w in range(1,width):
+                            shapes.append(Cube(GREEN, j*width+w,i*width+width,h,1,1,1))
+            
+    
+
+
+
 
 while x == False:
     for event in pygame.event.get():
@@ -305,11 +421,11 @@ while x == False:
     keyboard = pygame.key.get_pressed()
     
     if keyboard[pygame.K_LEFT] == 1:
-        posH-=3
+        posH-=5
         if posH<0:
             posH=359
     if keyboard[pygame.K_RIGHT] == 1:
-        posH+=3
+        posH+=5
         if posH>=360:
             posH=0
     if keyboard[pygame.K_DOWN] == 1:

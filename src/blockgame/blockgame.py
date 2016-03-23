@@ -15,7 +15,7 @@ difficulty = float(input("What difficulty would you like? (1-10, 1 being the har
 pygame.init()
 size = [700,500]
 screen = pygame.display.set_mode(size)
-screen2 = pygame.image.load('C:\\Users\\NVP\\Pictures\\2011-07-28 001\\IMG_0589.JPG').convert()
+screen2 = pygame.image.load('IMG_0589.JPG').convert()
 pygame.display.set_caption("Blockgame")
 x = False
 clock = pygame.time.Clock()
