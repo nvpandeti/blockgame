@@ -34,9 +34,9 @@ class Face:
                         self.center[2] + (a[0]*b[1] - a[1]*b[0]) )
         #print(self.center)
     def __mul__(self, other):
-        return (self.color[0]*other, self.color[1]*other, self.color[2]*other)
+        return [x*other for x in self.color]
     def __rmul__(self, other):
-        return (self.color[0]*other, self.color[1]*other, self.color[2]*other)
+        return [x*other for x in self.color]
     def getDist(self, realX, realY, realZ):
         return math.sqrt((realX - self.center[0])**2 + (realY - self.center[1])**2 + (realZ - self.center[2])**2)
     
@@ -212,7 +212,7 @@ class LightSource:
 global size;
 size = [900,550]
 RED = (255,0,0)
-GREEN = (100,255,100)
+GREEN = (100,255,100, 200)
 BLUE = (0,0,255)
 PURPLE = (200,0,200)
 ORANGE = (255,100,0)
@@ -220,7 +220,7 @@ BROWN = (100,50,30)
 WHITE = (255,255,255)
 speed = 40   #float(input("How fast do you want to go?(FPS)"))
 pygame.init()
-screen = pygame.display.set_mode(size)
+screen = pygame.display.set_mode(size, pygame.SRCALPHA, 32)
 pygame.display.set_caption("Perspective")
 x = False
 
@@ -296,7 +296,7 @@ shapes.append(Cube(GREEN, -3,-1,-5,2,2,2))
 #shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
 #"""
 
-rows = 16
+rows = 8
 cols = 8
 width = 3
 height = 1

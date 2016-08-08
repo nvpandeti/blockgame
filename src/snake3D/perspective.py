@@ -247,7 +247,7 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
 """
 shapes = []
 #shapes.append(SquarePyramid(-100,-100,-100,90,90,50))
-"""
+#"""
 shapes.append(Sphere((200,200,200), 36,0,0,.0015,10))
 shapes.append(Sphere((200,100,30), 67,0,0,.0037,10))
 shapes.append(Sphere(GREEN, 93,0,0,.004,10))
@@ -259,11 +259,11 @@ shapes.append(Torus((220,220,220), 888.8,0,0,.0571, .0731,20))
 shapes.append(Torus((170,170,170), 888.8,0,0,.0759, .085,20))
 shapes.append(Sphere((76,220,252),1783.7,0,0,.016,10))
 shapes.append(Sphere((50,123,250),2797.8,0,0,.015,10))
-"""
+#"""
 #shapes.append(Torus(RED, 8,0,2,2,2.7,20, 0, 15, 15))
 #shapes.append(Torus(GREEN, 8,0,2,2.7,3.4,20, 0, 15, 15))
 #shapes.append(Torus(BLUE, 8,0,2,3.4,4.1,20, 0, 15, 15))
-#shapes.append(LightSource((255,255,0), light[0], light[1], light[2], .5,10))
+shapes.append(LightSource((255,255,0), light[0], light[1], light[2], .5,10))
 #shapes.append(Cube(GREEN, 5,3,-3,2,2,2))
 #shapes.append(Sphere(PURPLE, 9,0,2,1.3,18))
 """
@@ -272,7 +272,7 @@ shapes.append(Sphere(BROWN, 10,0,0,1.3,15))
 shapes.append(Cylinder(BROWN, 9,0,2.5, 1.4, 5, 50, 90, 0))
 shapes.append(Sphere(BROWN, 9,0,5,1.4,18))
 #"""
-#shapes.append(Sphere(4,4,9,2,6))
+#shapes.append(Sphere(RED,4,4,9,2,60))
 #shapes.append(Sphere(4,4,12,1,4))
 """
 shapes.append(Cube(GREEN, -1,-1,-1,2,2,2))
@@ -290,7 +290,7 @@ shapes.append(Cube(GREEN, -3,-1,-5,2,2,2))
 #shapes.append(Cube(7,-1,1,2,2,2))
 #shapes.append(Cube(7,-1,-3,2,2,2))
 #shapes.append(Cube(7,-1,-5,2,2,2))
-#"""
+"""
 #shapes.append(Cylinder(RED, 8,0,-5, 1.4, 4, 50, 90, 0))
 #shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
 #"""
@@ -440,7 +440,7 @@ while x == False:
         if(not behind):
             pygame.draw.polygon(screen, face * shading, points, 0)
             #pygame.draw.polygon(screen, (0,0,0), points, 1)
-            #pygame.draw.aalines(screen, face * shading,True, points, 1)
+            pygame.draw.aalines(screen, face * shading,True, points, 1)
         #pygame.draw.circle(screen,(0,255,0),(int(450+angleD[0]*5*math.cos(angleR[0])), int(275-angleD[0]*5*math.sin(angleR[0]))),3,0)
         """
         angleH = []
