@@ -90,5 +90,5 @@ while x == False:
     text2 = font.render(str(Score1), True, (255, 255, 255))
     screen.blit(text2, [0,305])
     pygame.display.flip()
-    clock.tick(30)
+    clock.tick(60)
 pygame.quit()

@@ -247,7 +247,7 @@ faces = [Face(cube[0],cube[1],cube[3],cube[2],0),
 """
 shapes = []
 #shapes.append(SquarePyramid(-100,-100,-100,90,90,50))
-#"""
+"""
 shapes.append(Sphere((200,200,200), 36,0,0,.0015,10))
 shapes.append(Sphere((200,100,30), 67,0,0,.0037,10))
 shapes.append(Sphere(GREEN, 93,0,0,.004,10))
@@ -274,7 +274,7 @@ shapes.append(Sphere(BROWN, 9,0,5,1.4,18))
 #"""
 #shapes.append(Sphere(RED,4,4,9,2,60))
 #shapes.append(Sphere(4,4,12,1,4))
-"""
+#"""
 shapes.append(Cube(GREEN, -1,-1,-1,2,2,2))
 shapes.append(Cube(GREEN, -3,-1,-1,2,2,2))
 shapes.append(Cube(GREEN, 1,-1,-1,2,2,2))
@@ -287,9 +287,9 @@ shapes.append(Cube(GREEN, -3,-1,1,2,2,2))
 shapes.append(Cube(GREEN, -3,-1,3,2,2,2))
 shapes.append(Cube(GREEN, -3,-1,-3,2,2,2))
 shapes.append(Cube(GREEN, -3,-1,-5,2,2,2))
-#shapes.append(Cube(7,-1,1,2,2,2))
-#shapes.append(Cube(7,-1,-3,2,2,2))
-#shapes.append(Cube(7,-1,-5,2,2,2))
+shapes.append(Cube(GREEN, 7,-1,1,2,2,2))
+shapes.append(Cube(GREEN, 7,-1,-3,2,2,2))
+shapes.append(Cube(GREEN, 7,-1,-5,2,2,2))
 """
 #shapes.append(Cylinder(RED, 8,0,-5, 1.4, 4, 50, 90, 0))
 #shapes.append(SquarePyramid(PURPLE, 4,0,-3, 2,2,2))
@@ -349,11 +349,11 @@ while x == False:
     origin[0] = realX + r * math.cos(math.radians(posH)) * math.cos(math.radians(posZ))
     origin[1] = realY + r * math.sin(math.radians(posH)) * math.cos(math.radians(posZ))
     origin[2] = realZ + r * math.sin(math.radians(posZ))
-    """
+    #"""
     light[0] = realX
     light[1] = realY
     light[2] = realZ
-    """
+    #"""
     """
     if keyboard[pygame.K_LEFT] == 1:
         posH+=1
