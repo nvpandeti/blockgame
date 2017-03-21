@@ -22,8 +22,20 @@ DOWN = 2
 RIGHT = 3
 STUCK = 4
 
-WIDTH = 15
-HEIGHT = 15
+WIDTH = 300
+HEIGHT = 330
+
+def posDisp(posi, dir, disp):
+    pos = Point(posi.x, posi.y)
+    if(dir == UP):
+        pos.y += -disp
+    elif(dir == LEFT):
+        pos.x += -disp
+    elif(dir == DOWN):
+        pos.y += disp
+    elif(dir == RIGHT):
+        pos.x += disp
+    return pos
 
 class Point():
     def __init__(self, x, y):
@@ -47,23 +59,37 @@ class GameObject():
             self.pos.x += -1
         elif(self.dir == DOWN):
             self.pos.y += 1
-        elif(self.pos == RIGHT):
+        elif(self.dir == RIGHT):
             self.pos.x += 1
         return self.pos.inBounds()
 
 class Pacman(GameObject):
     def __init__(self, x, y, dir):
         GameObject.__init__(self, x, y, dir)
-    def move(self, walls):
-        GameObject.move(self)
+        self.newDir = STUCK
+    def move(self):
+        print(self.pos.x, self.pos.y, self.dir, self.newDir, ' |', end='')
         self.pos.x %= WIDTH
         self.pos.y %= HEIGHT
-        for wall in walls:
-            if(wall.pos == self.pos):
-                return False
-        return True
+        if(self.pos.x % 10 == 0 and self.pos.y % 10 == 0):
+            if(self.newDir != STUCK):
+                newP = posDisp(self.pos, self.newDir, 10)
+                if(walls_map[(newP.x//10)%30][(newP.y//10)%33] == False):
+                    self.dir = self.newDir
+                    self.newDir = STUCK
+            newP = posDisp(self.pos, self.dir, 10)
+            if(walls_map[(newP.x//10)%30][(newP.y//10)%33]):
+                self.newDir = self.dir
+                self.dir = STUCK
+        GameObject.move(self)
+        print(self.pos.x, self.pos.y, self.dir, self.newDir)
+        
+    def changeDir(self, dir):
+        self.newDir = dir
     def render(self, screen):
-        pass
+        pygame.draw.circle(screen, YELLOW, (self.pos.x+5, self.pos.y+5), 5)
+    def clear(self, screen):
+        pygame.draw.circle(screen, BLACK, (self.pos.x+5, self.pos.y+5), 5)
     
 class Ghost(GameObject):
     def __init__(self, x, y, dir, color):
@@ -129,6 +155,12 @@ def main():
     x = False
     mx = 0
     my = 0
+    screen.fill(BLACK)
+    for i in range(len(walls_map)):
+        for j in range(len(walls_map[i])):
+            if(walls_map[i][j]):
+                pygame.draw.rect(screen, BLUE, (i*10, j*10, 10, 10), 0)
+    pac = Pacman(140, 240, STUCK)
     while x == False:
         click = False
         for event in pygame.event.get():
@@ -137,14 +169,23 @@ def main():
                 pygame.quit
             if event.type == pygame.MOUSEBUTTONUP:
                 click = True
-
-        screen.fill(BLACK)
-        for i in range(len(walls_map)):
-            for j in range(len(walls_map[i])):
-                if(walls_map[i][j]):
-                    pygame.draw.rect(screen, BLUE, (i*10, j*10, 10, 10), 0)
+            elif event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
+                    pac.changeDir(RIGHT)
+                elif (event.key == pygame.K_DOWN or event.key == pygame.K_s):
+                    pac.changeDir(DOWN)
+                elif (event.key == pygame.K_LEFT or event.key == pygame.K_a):
+                    pac.changeDir(LEFT)
+                elif (event.key == pygame.K_UP or event.key == pygame.K_w):
+                    pac.changeDir(UP)
+        (mx,my) = pygame.mouse.get_pos()
+        #print(mx, my)
+        pac.move()
+        
+        pac.render(screen)
         pygame.display.flip()
-        clock.tick(25)
+        clock.tick(40)
+        pac.clear(screen)
     pygame.quit()
     
 main()    
