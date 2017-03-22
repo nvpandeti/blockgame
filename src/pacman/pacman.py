@@ -20,7 +20,7 @@ UP = 0
 LEFT = 1
 DOWN = 2
 RIGHT = 3
-STUCK = 4
+STUCK = 5
 
 WIDTH = 300
 HEIGHT = 330
@@ -36,6 +36,18 @@ def posDisp(posi, dir, disp):
     elif(dir == RIGHT):
         pos.x += disp
     return pos
+
+def oppDir(dir):
+    if(dir==UP):
+        return DOWN
+    elif(dir==DOWN):
+        return UP
+    elif(dir==LEFT):
+        return RIGHT
+    elif(dir==RIGHT):
+        return LEFT
+    else:
+        return dir
 
 class Point():
     def __init__(self, x, y):
@@ -67,10 +79,14 @@ class Pacman(GameObject):
     def __init__(self, x, y, dir):
         GameObject.__init__(self, x, y, dir)
         self.newDir = STUCK
+        self.aCounter = 1
     def move(self):
         print(self.pos.x, self.pos.y, self.dir, self.newDir, ' |', end='')
         self.pos.x %= WIDTH
         self.pos.y %= HEIGHT
+        if(self.newDir == oppDir(self.dir)):
+            self.dir = self.newDir
+            self.newDir = STUCK
         if(self.pos.x % 10 == 0 and self.pos.y % 10 == 0):
             if(self.newDir != STUCK):
                 newP = posDisp(self.pos, self.newDir, 10)
@@ -87,7 +103,27 @@ class Pacman(GameObject):
     def changeDir(self, dir):
         self.newDir = dir
     def render(self, screen):
+        if(self.aCounter == 11):
+            self.aCounter = 1
         pygame.draw.circle(screen, YELLOW, (self.pos.x+5, self.pos.y+5), 5)
+        tempDir = self.dir
+        tempACounter = self.aCounter
+        if(tempDir == STUCK):
+            tempDir = self.newDir
+            tempACounter = 1
+        center = Point(self.pos.x+4, self.pos.y+5)
+        mouthPos = posDisp(center, tempDir, 5)
+        if(tempDir==STUCK):
+            mouthPos = posDisp(center, LEFT, 5)
+        mouthOpen = round(abs(tempACounter-5.5)-.5)
+        #print(tempACounter)
+        #print(mouthOpen)
+        if(mouthOpen!=0):
+            if(tempDir==UP or tempDir==DOWN):
+                pygame.draw.polygon(screen, BLACK, [(center.x, center.y), (mouthPos.x-mouthOpen, mouthPos.y), (mouthPos.x+mouthOpen, mouthPos.y)])
+            else:
+                pygame.draw.polygon(screen, BLACK, [(center.x, center.y), (mouthPos.x, mouthPos.y-mouthOpen), (mouthPos.x, mouthPos.y+mouthOpen)])
+        self.aCounter += 1
     def clear(self, screen):
         pygame.draw.circle(screen, BLACK, (self.pos.x+5, self.pos.y+5), 5)
     
